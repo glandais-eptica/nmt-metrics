@@ -20,7 +20,7 @@ public class NMTExtractor {
     public NMTExtractor(String jcmdOutput) {
         extractTotalProperty(jcmdOutput);
         extractAllCategories(jcmdOutput);
-        logger.debug("Extracted NMT properties : {}", nmtProperties.toString());
+        logger.debug("Extracted NMT properties : {}", nmtProperties);
 
         if (nmtProperties.isEmpty()) {
             logger.info("NMT properties are empty after extraction. Probably something wrong occurred during extraction");
