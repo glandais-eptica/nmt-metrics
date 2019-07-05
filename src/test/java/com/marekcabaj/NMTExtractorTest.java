@@ -3,10 +3,12 @@ package com.marekcabaj;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.marekcabaj.nmt.NMTExtractor;
+
 import java.util.Map;
 
-import static com.marekcabaj.NMTExtractor.COMMITTED_PROPERTY;
-import static com.marekcabaj.NMTExtractor.RESERVED_PROPERTY;
+import static com.marekcabaj.nmt.NMTExtractor.COMMITTED_PROPERTY;
+import static com.marekcabaj.nmt.NMTExtractor.RESERVED_PROPERTY;
 import static org.junit.Assert.assertEquals;
 
 public class NMTExtractorTest {
@@ -61,78 +63,78 @@ public class NMTExtractorTest {
 
     @Test
     public void testGetTotal() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("total");
-        assertEquals(1470626, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(170826, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("total");
+        assertEquals(1470626, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(170826, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetHeap() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("java.heap");
-        assertEquals(65536, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(46592, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("java.heap");
+        assertEquals(65536, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(46592, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetClass() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("class");
-        assertEquals(1081294, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(36814, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("class");
+        assertEquals(1081294, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(36814, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetThread() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("thread");
-        assertEquals(22009, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(22009, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("thread");
+        assertEquals(22009, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(22009, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetCode() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("code");
-        assertEquals(252309, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(16101, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("code");
+        assertEquals(252309, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(16101, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGC() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("gc");
-        assertEquals(6028, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(5860, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("gc");
+        assertEquals(6028, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(5860, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetCompiler() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("compiler");
-        assertEquals(8424, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(8424, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("compiler");
+        assertEquals(8424, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(8424, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetInternal() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("internal");
-        assertEquals(4155, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(4155, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("internal");
+        assertEquals(4155, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(4155, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetSymbol() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("symbol");
-        assertEquals(9378, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(9378, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("symbol");
+        assertEquals(9378, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(9378, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetNMT() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("native.memory.tracking");
-        assertEquals(1232, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(1232, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("native.memory.tracking");
+        assertEquals(1232, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(1232, properties.get(COMMITTED_PROPERTY).longValue());
     }
 
     @Test
     public void testGetArenaChunk() throws Exception {
-        Map<String, Integer> properties = nmtExtractor.getNMTProperties().get("arena.chunk");
-        assertEquals(20262, properties.get(RESERVED_PROPERTY).intValue());
-        assertEquals(20262, properties.get(COMMITTED_PROPERTY).intValue());
+        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("arena.chunk");
+        assertEquals(20262, properties.get(RESERVED_PROPERTY).longValue());
+        assertEquals(20262, properties.get(COMMITTED_PROPERTY).longValue());
     }
 }

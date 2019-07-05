@@ -1,18 +1,16 @@
-package com.marekcabaj;
+package com.marekcabaj.nmt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-@Component
-class JcmdCommandRunner {
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
+public class JcmdCommandRunner {
 
     private final Logger logger = LoggerFactory.getLogger(JcmdCommandRunner.class);
     private static String os = System.getProperty("os.name").toLowerCase();
@@ -31,10 +29,14 @@ class JcmdCommandRunner {
         }
     }
 
-    @Autowired
     private Environment environment;
 
-    String runNMTSummary() {
+    public JcmdCommandRunner(Environment environment) {
+        super();
+        this.environment = environment;
+    }
+
+    public String runNMTSummary() {
         return runJcmdCommand("VM.native_memory summary");
     }
 
