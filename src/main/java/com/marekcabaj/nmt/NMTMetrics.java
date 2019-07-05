@@ -52,7 +52,9 @@ public class NMTMetrics {
     }
 
     protected NMTExtractor execute(String k) {
-        return new NMTExtractor(this.jcmdCommandRunner.runNMTSummary());
+        NMTExtractor result = new NMTExtractor(this.jcmdCommandRunner.runNMTSummary());
+        updateMeters();
+        return result;
     }
 
     public Optional<Map<String, Map<String, Long>>> getNMTProperties() {
