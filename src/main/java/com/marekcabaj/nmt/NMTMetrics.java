@@ -21,16 +21,12 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.BaseUnits;
 
 public class NMTMetrics {
 
     private final Logger logger = LoggerFactory.getLogger(NMTMetrics.class);
-
-    private MeterRegistry registry;
-
-    private Duration cacheDuration;
 
     private Map<String, List<Meter>> meters;
 
@@ -38,41 +34,34 @@ public class NMTMetrics {
 
     private LoadingCache<String, NMTExtractor> cache;
 
-    public NMTMetrics(MeterRegistry registry, JcmdCommandRunner jcmdCommandRunner, Duration cacheDuration) {
-        super();
-        this.registry = registry;
-        this.cacheDuration = cacheDuration;
-        this.meters = Collections.synchronizedMap(new HashMap<>());
-        this.jcmdCommandRunner = jcmdCommandRunner;
-        this.cache = Caffeine.newBuilder().expireAfterWrite(cacheDuration).build(this::execute);
-        this.addMeters(NMTExtractor.TOTAL);
+    public NMTMetrics() {
+        this(Duration.ofSeconds(10L));
     }
 
-    public Duration getCacheDuration() {
-        return this.cacheDuration;
+    public NMTMetrics(Duration cacheDuration) {
+        super();
+        this.meters = Collections.synchronizedMap(new HashMap<>());
+        this.jcmdCommandRunner = new JcmdCommandRunner();
+        this.cache = Caffeine.newBuilder().expireAfterWrite(cacheDuration).build(this::execute);
+        // first call for init
+        this.cache.get("");
     }
 
     protected NMTExtractor execute(String k) {
         NMTExtractor result = new NMTExtractor(this.jcmdCommandRunner.runNMTSummary());
-        updateMeters();
+        updateMeters(result);
         return result;
     }
 
-    public Optional<Map<String, Map<String, Long>>> getNMTProperties() {
-        return Optional.ofNullable(cache.get("")).map(NMTExtractor::getNMTProperties);
+    protected long getValue(String category, String property) {
+        return Optional.ofNullable(cache.get("")).map(NMTExtractor::getNMTProperties).map(map -> map.get(category))
+                .map(map -> map.get(property)).map(kb -> 1024 * kb).orElse(-1L);
     }
 
-    public Set<String> getCategories() {
-        return getNMTProperties().map(Map::keySet).orElse(Collections.emptySet());
-    }
-
-    public long getValue(String category, String property) {
-        return getNMTProperties().map(map -> map.get(category)).map(map -> map.get(property)).map(kb -> 1024 * kb).orElse(-1L);
-    }
-
-    public synchronized void updateMeters() {
+    protected void updateMeters(NMTExtractor result) {
         logger.info("Adding NMT metrics to metrics");
-        Set<String> newCategories = new HashSet<>(getCategories());
+        Set<String> newCategories = Optional.ofNullable(result).map(NMTExtractor::getNMTProperties).map(Map::keySet)
+                .orElse(Collections.emptySet());
         Set<String> toRemove = new HashSet<>(meters.keySet());
 
         Set<String> toAdd = new HashSet<>(newCategories);
@@ -82,7 +71,7 @@ public class NMTMetrics {
         toRemove.forEach(category -> {
             List<Meter> categoryMeters = meters.remove(category);
             if (categoryMeters != null) {
-                categoryMeters.forEach(registry::remove);
+                categoryMeters.forEach(Metrics.globalRegistry::remove);
             }
         });
 
@@ -91,18 +80,16 @@ public class NMTMetrics {
         });
     }
 
-    public List<Meter> addMeters(String category) {
+    protected List<Meter> addMeters(String category) {
         List<Meter> list = new ArrayList<>();
         list.add(addMeter(category, RESERVED_PROPERTY, "max possible usage"));
         list.add(addMeter(category, COMMITTED_PROPERTY, "real memory used"));
         return list;
     }
 
-    private Gauge addMeter(String category, String property, String comment) {
-        return Gauge.builder("jvm_memory_nmt_" + property, () -> getValue(category, property))
-                .tag("category", category)
+    protected Gauge addMeter(String category, String property, String comment) {
+        return Gauge.builder("jvm_memory_nmt_" + property, () -> getValue(category, property)).tag("category", category)
                 .description("Native Memory Tracking of the Java virtual machine - " + property + " : " + comment)
-                .baseUnit(BaseUnits.BYTES)
-                .register(registry);
+                .baseUnit(BaseUnits.BYTES).register(Metrics.globalRegistry);
     }
 }

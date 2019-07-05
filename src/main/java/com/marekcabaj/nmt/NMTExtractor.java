@@ -28,7 +28,7 @@ public class NMTExtractor {
         }
     }
 
-    private void extractAllCategories(String jcmdOutput) {
+    protected void extractAllCategories(String jcmdOutput) {
         Pattern pattern = Pattern.compile("-\\s*(?<" + CATEGORY_PROPERTY + ">.*) \\(reserved=(?<" + RESERVED_PROPERTY + ">\\d*)KB, committed=(?<" + COMMITTED_PROPERTY + ">\\d*)KB\\)");
         Matcher matcher = pattern.matcher(jcmdOutput);
         while (matcher.find()) {
@@ -40,7 +40,7 @@ public class NMTExtractor {
         }
     }
 
-    private void extractTotalProperty(String jcmdOutput) {
+    protected void extractTotalProperty(String jcmdOutput) {
         Pattern pattern = Pattern.compile("Total: reserved=(?<" + RESERVED_PROPERTY + ">\\d*)KB, committed=(?<" + COMMITTED_PROPERTY + ">\\d*)KB");
         Matcher matcher = pattern.matcher(jcmdOutput);
         matcher.find();
