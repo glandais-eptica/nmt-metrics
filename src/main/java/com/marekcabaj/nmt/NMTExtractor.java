@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public class NMTExtractor {
 
     private final Logger logger = LoggerFactory.getLogger(NMTExtractor.class);
+    public static final String TOTAL = "total";
     public static final String RESERVED_PROPERTY = "reserved";
     public static final String COMMITTED_PROPERTY = "committed";
     public static final String CATEGORY_PROPERTY = "category";
@@ -46,7 +47,7 @@ public class NMTExtractor {
         Map<String, Long> properties = new HashMap<>();
         properties.put(RESERVED_PROPERTY, Long.parseLong(matcher.group(RESERVED_PROPERTY)));
         properties.put(COMMITTED_PROPERTY, Long.parseLong(matcher.group(COMMITTED_PROPERTY)));
-        nmtProperties.put("total", properties);
+        nmtProperties.put(TOTAL, properties);
     }
 
     public Map<String, Map<String, Long>> getNMTProperties() {

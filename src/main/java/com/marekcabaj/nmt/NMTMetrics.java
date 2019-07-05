@@ -45,6 +45,7 @@ public class NMTMetrics {
         this.meters = Collections.synchronizedMap(new HashMap<>());
         this.jcmdCommandRunner = jcmdCommandRunner;
         this.cache = Caffeine.newBuilder().expireAfterWrite(cacheDuration).build(this::execute);
+        this.addMeters(NMTExtractor.TOTAL);
     }
 
     public Duration getCacheDuration() {
@@ -86,11 +87,15 @@ public class NMTMetrics {
         });
 
         toAdd.forEach(category -> {
-            List<Meter> list = new ArrayList<>();
-            meters.put(category, list);
-            list.add(addMeter(category, RESERVED_PROPERTY, "max possible usage"));
-            list.add(addMeter(category, COMMITTED_PROPERTY, "real memory used"));
+            meters.put(category, addMeters(category));
         });
+    }
+
+    public List<Meter> addMeters(String category) {
+        List<Meter> list = new ArrayList<>();
+        list.add(addMeter(category, RESERVED_PROPERTY, "max possible usage"));
+        list.add(addMeter(category, COMMITTED_PROPERTY, "real memory used"));
+        return list;
     }
 
     private Gauge addMeter(String category, String property, String comment) {
