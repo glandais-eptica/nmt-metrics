@@ -43,11 +43,12 @@ public class NMTExtractor {
     protected void extractTotalProperty(String jcmdOutput) {
         Pattern pattern = Pattern.compile("Total: reserved=(?<" + RESERVED_PROPERTY + ">\\d*)KB, committed=(?<" + COMMITTED_PROPERTY + ">\\d*)KB");
         Matcher matcher = pattern.matcher(jcmdOutput);
-        matcher.find();
-        Map<String, Long> properties = new HashMap<>();
-        properties.put(RESERVED_PROPERTY, Long.parseLong(matcher.group(RESERVED_PROPERTY)));
-        properties.put(COMMITTED_PROPERTY, Long.parseLong(matcher.group(COMMITTED_PROPERTY)));
-        nmtProperties.put(TOTAL, properties);
+        if (matcher.find()) {
+            Map<String, Long> properties = new HashMap<>();
+            properties.put(RESERVED_PROPERTY, Long.parseLong(matcher.group(RESERVED_PROPERTY)));
+            properties.put(COMMITTED_PROPERTY, Long.parseLong(matcher.group(COMMITTED_PROPERTY)));
+            nmtProperties.put(TOTAL, properties);
+        }
     }
 
     public Map<String, Map<String, Long>> getNMTProperties() {
