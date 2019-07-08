@@ -75,7 +75,7 @@ public class NMTMetrics {
         toRemove.forEach(category -> {
             List<Meter> categoryMeters = meters.remove(category);
             if (categoryMeters != null) {
-                categoryMeters.forEach(Metrics.globalRegistry::remove);
+                categoryMeters.forEach(this.meterRegistry::remove);
             }
         });
 
@@ -92,7 +92,7 @@ public class NMTMetrics {
     }
 
     protected Gauge addMeter(String category, String property, String comment) {
-        return Gauge.builder("jvm_memory_nmt_" + property, () -> getValue(category, property)).tag("category", category)
+        return Gauge.builder("jvm.memory.nmt." + property, () -> getValue(category, property)).tag("category", category)
                 .description("Native Memory Tracking of the Java virtual machine - " + property + " : " + comment)
                 .baseUnit(BaseUnits.BYTES).register(this.meterRegistry);
     }
