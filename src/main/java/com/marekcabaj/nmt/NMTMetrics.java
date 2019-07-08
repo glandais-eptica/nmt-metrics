@@ -21,12 +21,15 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.BaseUnits;
 
 public class NMTMetrics {
 
     private final Logger logger = LoggerFactory.getLogger(NMTMetrics.class);
+
+    private MeterRegistry meterRegistry;
 
     private Map<String, List<Meter>> meters;
 
@@ -35,11 +38,12 @@ public class NMTMetrics {
     private LoadingCache<String, NMTExtractor> cache;
 
     public NMTMetrics() {
-        this(Duration.ofSeconds(10L));
+        this(Metrics.globalRegistry, Duration.ofSeconds(10L));
     }
 
-    public NMTMetrics(Duration cacheDuration) {
+    public NMTMetrics(MeterRegistry meterRegistry, Duration cacheDuration) {
         super();
+        this.meterRegistry = meterRegistry;
         this.meters = Collections.synchronizedMap(new HashMap<>());
         this.jcmdCommandRunner = new JcmdCommandRunner();
         this.cache = Caffeine.newBuilder().expireAfterWrite(cacheDuration).build(this::execute);
@@ -90,6 +94,6 @@ public class NMTMetrics {
     protected Gauge addMeter(String category, String property, String comment) {
         return Gauge.builder("jvm_memory_nmt_" + property, () -> getValue(category, property)).tag("category", category)
                 .description("Native Memory Tracking of the Java virtual machine - " + property + " : " + comment)
-                .baseUnit(BaseUnits.BYTES).register(Metrics.globalRegistry);
+                .baseUnit(BaseUnits.BYTES).register(this.meterRegistry);
     }
 }
