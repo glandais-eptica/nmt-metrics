@@ -1,19 +1,17 @@
-package com.marekcabaj;
+package com.marekcabaj.nmt.jcmd;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.marekcabaj.nmt.NMTExtractor;
-
-import java.util.Map;
-
-import static com.marekcabaj.nmt.NMTExtractor.COMMITTED_PROPERTY;
-import static com.marekcabaj.nmt.NMTExtractor.RESERVED_PROPERTY;
-import static org.junit.Assert.assertEquals;
+import com.marekcabaj.nmt.bean.NativeMemoryTrackingKind;
+import com.marekcabaj.nmt.bean.NativeMemoryTrackingType;
+import com.marekcabaj.nmt.bean.NativeMemoryTrackingValues;
 
 public class NMTExtractorTest {
 
-    private NMTExtractor nmtExtractor;
+    private NativeMemoryTrackingValues nmtProperties;
 
     @Before
     public void setUp() {
@@ -58,83 +56,83 @@ public class NMTExtractorTest {
                 " \n" +
                 "-               Arena Chunk (reserved=20262KB, committed=20262KB)\n" +
                 "                            (malloc=20262KB) ";
-        nmtExtractor = new NMTExtractor(testJmcdOutput);
+        nmtProperties = new NMTPropertiesExtractor().extractFromJcmdOutput(testJmcdOutput);
     }
 
     @Test
     public void testGetTotal() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("total");
-        assertEquals(1470626, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(170826, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.TOTAL;
+        assertEquals(1470626, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(170826, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetHeap() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("java.heap");
-        assertEquals(65536, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(46592, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.JAVA_HEAP;
+        assertEquals(65536, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(46592, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetClass() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("class");
-        assertEquals(1081294, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(36814, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.CLASS;
+        assertEquals(1081294, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(36814, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetThread() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("thread");
-        assertEquals(22009, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(22009, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.THREAD;
+        assertEquals(22009, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(22009, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetCode() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("code");
-        assertEquals(252309, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(16101, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.CODE;
+        assertEquals(252309, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(16101, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGC() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("gc");
-        assertEquals(6028, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(5860, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.GC;
+        assertEquals(6028, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(5860, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetCompiler() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("compiler");
-        assertEquals(8424, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(8424, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.COMPILER;
+        assertEquals(8424, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(8424, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetInternal() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("internal");
-        assertEquals(4155, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(4155, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.INTERNAL;
+        assertEquals(4155, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(4155, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetSymbol() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("symbol");
-        assertEquals(9378, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(9378, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.SYMBOL;
+        assertEquals(9378, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(9378, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetNMT() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("native.memory.tracking");
-        assertEquals(1232, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(1232, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.NMT;
+        assertEquals(1232, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(1232, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 
     @Test
     public void testGetArenaChunk() throws Exception {
-        Map<String, Long> properties = nmtExtractor.getNMTProperties().get("arena.chunk");
-        assertEquals(20262, properties.get(RESERVED_PROPERTY).longValue());
-        assertEquals(20262, properties.get(COMMITTED_PROPERTY).longValue());
+        NativeMemoryTrackingType key = NativeMemoryTrackingType.ARENA_CHUNK;
+        assertEquals(20262, nmtProperties.get(NativeMemoryTrackingKind.RESERVED).get(key).longValue());
+        assertEquals(20262, nmtProperties.get(NativeMemoryTrackingKind.COMMITTED).get(key).longValue());
     }
 }
