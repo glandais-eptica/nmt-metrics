@@ -19,7 +19,7 @@ mvn clean install
 
 then you can use it as dependency in your `pom.xml` :
 
-```
+```xml
 <dependency>
     <groupId>com.marekcabaj</groupId>
     <artifactId>nmt-metrics</artifactId>
@@ -29,7 +29,7 @@ then you can use it as dependency in your `pom.xml` :
 
 This dependency is meant to be used in Spring Boot application so you need to have this parent declaration in your `pom.xml`
 
-```
+```xml
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -54,7 +54,7 @@ Start the JVM with command line option: `-XX:NativeMemoryTracking=summary`. To g
 
 Add a NMTMetrics bean in your context
 
-```
+```java
 @Configuration
 public class JvmMetricsConfiguration {
     @Bean
