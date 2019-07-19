@@ -11,10 +11,38 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.marekcabaj</groupId>
+    <groupId>io.github.glandais-eptica</groupId>
     <artifactId>nmt-metrics</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>NMT tools to expose JVM native memory tracking informations in Micrometer</description>
+    <url>https://github.com/glandais-eptica/nmt-metrics</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Marek Cabaj</name>
+            <url>https://github.com/mcabaj</url>
+        </developer>
+        <developer>
+            <name>Gabriel Landais</name>
+            <url>https://github.com/glandais-eptica</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/glandais-eptica/nmt-metrics.git</connection>
+        <developerConnection>scm:git:ssh://github.com:glandais-eptica/nmt-metrics.git</developerConnection>
+        <url>http://github.com/glandais-eptica/nmt-metrics/tree/master</url>
+    </scm>
 
     <properties>
         <java.version>1.8</java.version>
