@@ -39,9 +39,9 @@
     </developers>
 
     <scm>
+        <url>http://github.com/glandais-eptica/nmt-metrics</url>
         <connection>scm:git:git://github.com/glandais-eptica/nmt-metrics.git</connection>
-        <developerConnection>scm:git:ssh://github.com:glandais-eptica/nmt-metrics.git</developerConnection>
-        <url>http://github.com/glandais-eptica/nmt-metrics/tree/master</url>
+        <developerConnection>scm:git:git@github.com:glandais-eptica/nmt-metrics.git</developerConnection>
     </scm>
 
     <distributionManagement>
