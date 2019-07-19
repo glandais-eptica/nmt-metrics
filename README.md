@@ -1,7 +1,7 @@
 ﻿# Native Memory Tracking (NMT) of Container memory for Java Applications
 
 ## What does this Library do ?
-This library adds custom java [native memory tracking](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html) metrics to the `/metrics` spring boot actuator endpoint.  
+This library adds custom java [native memory tracking](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr007.html) metrics to [Micrometer](https://micrometer.io/) (hence to the [Spring Boot actuator metrics](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html)).  
 
 ## Why will I ever need Java Native Memory Tracking ?
 
@@ -23,7 +23,7 @@ then you can use it as dependency in your `pom.xml` :
 <dependency>
     <groupId>com.marekcabaj</groupId>
     <artifactId>nmt-metrics</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -33,7 +33,8 @@ This dependency is meant to be used in Spring Boot application so you need to ha
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.4.1.RELEASE</version>
+    <version>2.1.6.RELEASE</version>
+    <relativePath /> <!-- lookup parent from repository -->
 </parent>
 
 <dependency>
@@ -45,94 +46,36 @@ This dependency is meant to be used in Spring Boot application so you need to ha
 
 # Usage
 
-1. Start the JVM with command line option: `-XX:NativeMemoryTracking=summary`. To get a more detailed view of native memory usage, start the JVM with command line option: `-XX:NativeMemoryTracking=detail`.
-2. To add the native memory statistics to the spring boot `/metrics` actuator endpoint follow the steps below. To periodically report/export statistics to your favorite monitoring solution implement the  `NMTPropertiesHandler` component explained below.
+## Start JVM with option
 
+Start the JVM with command line option: `-XX:NativeMemoryTracking=summary`. To get a more detailed view of native memory usage, start the JVM with command line option: `-XX:NativeMemoryTracking=detail`.
 
-### Adding NMT properties to Spring Boot actuator `/metrics` endpoint
+## Add NMTMetrics bean
 
-You don't need to write any code to add NMT properties to `/metrics` endpoint. You just need to add following dependencies :
-
-```
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId>
-</dependency>
-```
-
-By default NMT properties are added to `/metrics` endpoint. If you want to disable them you need to add this to your `application.properties` :
+Add a NMTMetrics bean in your context
 
 ```
-nmt.metrics.enabled=false
+@Configuration
+public class JvmMetricsConfiguration {
+    @Bean
+    @Lazy(false)
+    public NMTMetrics nmtMetrics() {
+        return new NMTMetrics();
+    }
+}
 ```
 
+## Use NMT gauges
 
-### Using scheduled NMT properties handling
+[Gauges](https://micrometer.io/docs/concepts#_gauges) are added to Micrometer :
 
-You may want to analyze and post the NMT metrics to a  custom monitoring solution like NewRelic or post to a OpenTSDB database, then you need to follow the steps below:
 
-1. Define 2 properties in your Spring Boot `application.properties` :
+* `jvm.memory.nmt.reserved` : Reserved memory gauges, total or per category (see [type list](src/main/java/com/marekcabaj/nmt/bean/NativeMemoryTrackingType.java))
+    * `jvm.memory.nmt.reserved{category="total"}` : Total reserved memory
+    * `jvm.memory.nmt.reserved{category="java.heap"}` : Reserved memory for Java instances
+* `jvm.memory.nmt.committed` : Committed memory gauges, total or per category (see [type list](src/main/java/com/marekcabaj/nmt/bean/NativeMemoryTrackingType.java))
+    * `jvm.memory.nmt.committed{category="total"}` : Total committed memory (the "real" memory usage of JVM process)
+    * `jvm.memory.nmt.committed{category="java.heap"}` : Committed memory for Java instances
 
-  ```
-  nmt.scheduler.enabled=true
-  nmt.scheduler.delay=5000
-  ```
+If metrics are exposed with Prometheus, `jvm_memory_nmt_committed_bytes{category="thread"}` will display thread memory usage for instance.
 
-  * By default (when `nmt.scheduler.enabled` property is missing) the scheduled NMT properties reading is disabled
-  * By default (when `nmt.scheduler.delay` property is missing) delay is 60000 (1 minute)
-  * Delay should be specified in milliseconds.
-
-1. To handle NMT properties reads you need to implement `NMTPropertiesHandler` and mark your class with `@Component` :
-
-  ```
-  @Component
-  public class Handler implements NMTPropertiesHandler {
-
-      @Override
-      public void handleNMTProperties(Map<String, Map<String, Integer>> properties) {
-          // handle properties here
-      }
-  }
-  ```
-
-  `properties` map has following structure :
-
-    ```
-    categoryName1:
-    	property1:100
-    	property2:300
-    categoryName2:
-    	property1:500
-    	property2:0
-
-    ...
-
-    ```
-
-  Real example :
-
-    ```
-    java.heap:
-    	committed:286720
-    	reserved:4167680
-    thread:
-    	committed:39659
-    	reserved:39659
-
-    ...
-
-    ```
-
-### Leveraging NMT in Cloud Foundry
-
-cf push your application with the `-XX:NativeMemoryTracking=summary` environment variable and thereafter collect the logs via the NMT Property handling code below or via simple shell script that curls the `/metrics` actuator endpoint.
-
-`JAVA_OPTS: -XX:NativeMemoryTracking=summary`
-
-or for more details :
-
-`JAVA_OPTS: -XX:NativeMemoryTracking=summary -XX:+PrintHeapAtGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps`
