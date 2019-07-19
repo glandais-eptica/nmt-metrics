@@ -27,27 +27,23 @@ Create a NMTMetrics instance
 
 ```java
 public class MyProgram {
-
-    private static final NMTMetrics NMT_METRICS = new NMTMetrics();
-    
     public static void main(String[] args) {
+        new JvmNmtMetrics().bindTo(Metrics.globalRegistry);
         //...
     }
 }
 ```
 
-## Spring usage
+## Spring Boot usage
 
-Add a NMTMetrics bean in your context.
-This code snippet will use Spring Micrometer registry.
+Add a NMTMetrics bean in your context via a `@Configuration`.
 
 ```java
 @Configuration
 public class JvmMetricsConfiguration {
     @Bean
-    @Lazy(false)
-    public NMTMetrics nmtMetrics(MeterRegistry meterRegistry) {
-        return new NMTMetrics(meterRegistry, Duration.ofSeconds(10L));
+    public MeterBinder jvmNmtMetrics() {
+        return new JvmNmtMetrics();
     }
 }
 ```

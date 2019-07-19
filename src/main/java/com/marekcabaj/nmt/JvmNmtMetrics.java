@@ -24,12 +24,12 @@ import com.marekcabaj.nmt.jcmd.NMTJcmdRetriever;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.BaseUnits;
+import io.micrometer.core.instrument.binder.MeterBinder;
 
-public class NMTMetrics {
+public class JvmNmtMetrics implements MeterBinder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NMTMetrics.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JvmNmtMetrics.class);
 
     private MeterRegistry meterRegistry;
 
@@ -39,18 +39,22 @@ public class NMTMetrics {
 
     private LoadingCache<String, NativeMemoryTrackingValues> nativeMemoryTrackingValuesCache;
 
-    public NMTMetrics() {
-        this(Metrics.globalRegistry, Duration.ofSeconds(10L));
+    public JvmNmtMetrics() {
+        this(Duration.ofSeconds(10L));
     }
 
-    public NMTMetrics(MeterRegistry meterRegistry, Duration cacheDuration) {
+    public JvmNmtMetrics(Duration cacheDuration) {
         super();
-        this.meterRegistry = meterRegistry;
         this.meters = Collections
                 .synchronizedMap(new EnumMap<NativeMemoryTrackingType, List<Meter>>(NativeMemoryTrackingType.class));
         this.nmtJcmdRetriever = new NMTJcmdRetriever();
         this.nativeMemoryTrackingValuesCache = Caffeine.newBuilder().expireAfterWrite(cacheDuration)
                 .build(this::computeVmNativeMemorySummary);
+    }
+
+    @Override
+    public void bindTo(MeterRegistry registry) {
+        this.meterRegistry = registry;
 
         // first call for init
         NativeMemoryTrackingValues initialSummary = this.getVmNativeMemorySummary();
